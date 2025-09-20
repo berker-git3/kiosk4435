@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import VoucherModal from "./VoucherModal";
 
 // Booking modal with seat map -> passenger info -> payment (Card.js) flow
 export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
