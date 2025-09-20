@@ -213,13 +213,18 @@ export default function OtobusSonuclar() {
           <section>
             <div className="space-y-4">
               {results.map((r) => (
-                <ResultCard key={r.id} item={r} onSelect={(it: any) => alert(`Seçildi: ${it.operator} ${it.depart}`)} />
+                <ResultCard key={r.id} item={r} onSelect={onSelectTrip} />
               ))}
 
               {results.length === 0 && (
                 <div className="p-6 border rounded text-center">Sefer bulunamadı.</div>
               )}
             </div>
+            {bookingOpen && (
+              <React.Suspense>
+                <BookingModal open={bookingOpen} trip={selectedTrip} onClose={() => setBookingOpen(false)} onConfirm={onConfirmBooking} />
+              </React.Suspense>
+            )}
           </section>
         </div>
       </div>
