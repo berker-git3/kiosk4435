@@ -88,17 +88,6 @@ export default function OtobusSonuclar() {
     });
   };
 
-  const results = useMemo(() => {
-    let data = MOCK.slice();
-    if (filters.search) {
-      data = data.filter((r) => r.operator.toLowerCase().includes(filters.search.toLowerCase()) || r.depart.includes(filters.search));
-    }
-    if (filters.operators && filters.operators.size) {
-      data = data.filter((r) => filters.operators.has(r.operator));
-    }
-    return data;
-  }, [filters]);
-
   const getTimeBucket = (t: string) => {
     const [hh] = t.split(":");
     const h = Number(hh);
@@ -174,20 +163,7 @@ export default function OtobusSonuclar() {
           <section>
             <div className="space-y-4">
               {results.map((r) => (
-                <article key={r.id} className="flex flex-col md:flex-row items-center justify-between border rounded-lg p-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-4">
-                      <div className="text-xl font-semibold">{r.depart}</div>
-                      <div className="text-sm text-slate-500">{r.arrive}</div>
-                      <div className="ml-4 text-sm text-slate-600">{r.operator}</div>
-                    </div>
-                    <div className="text-sm text-slate-500 mt-2">Süre: {r.duration}</div>
-                  </div>
-                  <div className="mt-4 md:mt-0 md:ml-4 flex items-center gap-4">
-                    <div className="text-lg font-semibold">{r.price}₺</div>
-                    <Button className="bg-black text-white">Seç</Button>
-                  </div>
-                </article>
+                <ResultCard key={r.id} item={r} onSelect={(it: any) => alert(`Seçildi: ${it.operator} ${it.depart}`)} />
               ))}
 
               {results.length === 0 && (
