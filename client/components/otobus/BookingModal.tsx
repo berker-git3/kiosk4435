@@ -227,16 +227,22 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
                   {Array.from({ length: seatCount }).map((_, idx) => {
                     const n = idx + 1;
                     const isOcc = occupiedSet.has(n);
-                    const isSel = selectedSeats.includes(n);
-                    const cls = isOcc ? "bg-red-600 cursor-not-allowed" : isSel ? "bg-green-500 transform scale-105 shadow-lg" : "bg-white hover:bg-green-100";
+                    const selObj = selectedSeats.find((it) => it.seat === n);
+                    const isSel = !!selObj;
+                    const cls = isOcc ? "bg-red-600 cursor-not-allowed text-white" : isSel ? "bg-green-500 transform scale-105 shadow-lg text-white" : "bg-white hover:bg-green-100";
                     return (
                       <button
                         key={n}
                         onClick={() => toggleSeat(n)}
                         disabled={isOcc}
                         className={`border rounded-md p-2 text-xs transition-all duration-150 ease-in-out ${cls} ${isSel ? "border-2 border-black" : "border-slate-200"}`}
+                        title={isSel ? `Seçili (${selObj?.gender || 'Cinsiyet seçilmeyen'})` : `Koltuk ${n}`}
                       >
-                        {n}
+                        <div className="flex flex-col items-center">
+                          <span>{n}</span>
+                          {selObj?.gender === 'female' && <span className="text-pink-600 text-[10px]">♀</span>}
+                          {selObj?.gender === 'male' && <span className="text-blue-600 text-[10px]">♂</span>}
+                        </div>
                       </button>
                     );
                   })}
