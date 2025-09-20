@@ -191,24 +191,50 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
             <div>
               <h4 className="font-medium mb-3">Koltuk Seçimi</h4>
               <div className="mb-3 text-sm text-slate-600">Dolu koltuklar <span className="inline-block w-4 h-4 bg-red-600 ml-2 align-middle rounded-sm" /> , Boş koltuklar <span className="inline-block w-4 h-4 bg-green-500 ml-2 align-middle rounded-sm" /></div>
-              <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(12, 1fr)" }}>
-                {Array.from({ length: seatCount }).map((_, idx) => {
-                  const n = idx + 1;
-                  const isOcc = occupiedSet.has(n);
-                  const isSel = selectedSeats.includes(n);
-                  const cls = isOcc ? "bg-red-600 cursor-not-allowed" : isSel ? "bg-green-500 transform scale-105 shadow-lg" : "bg-white hover:bg-green-100";
-                  return (
-                    <button
-                      key={n}
-                      onClick={() => toggleSeat(n)}
-                      disabled={isOcc}
-                      className={`border rounded-md p-2 text-xs transition-all duration-150 ease-in-out ${cls} ${isSel ? "border-2 border-black" : "border-slate-200"}`}
-                    >
-                      {n}
-                    </button>
-                  );
-                })}
-              </div>
+              {seatLayout ? (
+                <div className="space-y-1">
+                  {seatLayout.map((row, ri) => (
+                    <div key={ri} className="flex gap-2">
+                      {row.map((cell, ci) => {
+                        if (cell === null) return <div key={ci} className="w-8" />;
+                        const n = cell;
+                        const isOcc = occupiedSet.has(n);
+                        const isSel = selectedSeats.includes(n);
+                        const cls = isOcc ? "bg-red-600 cursor-not-allowed" : isSel ? "bg-green-500 transform scale-105 shadow-lg" : "bg-white hover:bg-green-100";
+                        return (
+                          <button
+                            key={n}
+                            onClick={() => toggleSeat(n)}
+                            disabled={isOcc}
+                            className={`w-8 h-8 flex items-center justify-center border rounded-md text-xs transition-all duration-150 ease-in-out ${cls} ${isSel ? "border-2 border-black" : "border-slate-200"}`}
+                          >
+                            {n}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(12, 1fr)" }}>
+                  {Array.from({ length: seatCount }).map((_, idx) => {
+                    const n = idx + 1;
+                    const isOcc = occupiedSet.has(n);
+                    const isSel = selectedSeats.includes(n);
+                    const cls = isOcc ? "bg-red-600 cursor-not-allowed" : isSel ? "bg-green-500 transform scale-105 shadow-lg" : "bg-white hover:bg-green-100";
+                    return (
+                      <button
+                        key={n}
+                        onClick={() => toggleSeat(n)}
+                        disabled={isOcc}
+                        className={`border rounded-md p-2 text-xs transition-all duration-150 ease-in-out ${cls} ${isSel ? "border-2 border-black" : "border-slate-200"}`}
+                      >
+                        {n}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
 
               <div className="mt-4 flex items-center justify-end gap-3">
                 <button onClick={onClose} className="px-4 py-2 rounded-md border">İptal</button>
