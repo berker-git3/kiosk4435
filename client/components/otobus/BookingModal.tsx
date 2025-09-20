@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import VoucherModal from "./VoucherModal";
 
@@ -179,7 +180,7 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
       });
       form.submit();
     } catch (err: any) {
-      alert("Ödeme başlatılamadı, rezervasyon lokal olarak kaydedildi.");
+      alert("Ödeme başlat��lamadı, rezervasyon lokal olarak kaydedildi.");
       confirmBooking({ method: "card", fallback: true });
     }
   };
