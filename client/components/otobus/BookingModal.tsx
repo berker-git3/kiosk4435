@@ -145,8 +145,10 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
       payment: paymentResult || { method: "card" },
       createdAt: new Date().toISOString(),
     };
+    console.log("[BookingModal] confirmBooking booking=", booking);
     setReservation(booking);
     setVoucherOpen(true);
+    console.log("[BookingModal] voucherOpen set true");
     onConfirm && onConfirm(booking);
   };
 
