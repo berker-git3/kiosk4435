@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import FilterSidebar from "@/components/otobus/FilterSidebar";
 import { Button } from "@/components/ui/button";
 import ResultCard from "@/components/otobus/ResultCard";
+import BookingModal from "@/components/otobus/BookingModal";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
