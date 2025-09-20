@@ -16,6 +16,7 @@ const navItems = [
   { to: "/", label: "Ana Sayfa", icon: Home },
   { to: "/turlar", label: "Turlar", icon: Ticket },
   { to: "/transferler", label: "Transferler", icon: Car },
+  { to: "/arac-kiralama", label: "Araç Kiralama", icon: Car },
   { to: "/videolar", label: "Tanıtım/Videolar", icon: Film },
   { to: "/yat-kiralama", label: "Yat Kiralama", icon: Ship },
   { to: "/ucak-bileti", label: "Uçak Bileti", icon: Plane },

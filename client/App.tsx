@@ -15,6 +15,7 @@ import TurDetay from "./pages/TurDetay";
 import Videolar from "./pages/Videolar";
 import YatKiralama from "./pages/YatKiralama";
 import YatDetay from "./pages/YatDetay";
+import AracKiralama from "./pages/AracKiralama";
 import UcakBileti from "./pages/UcakBileti";
 import UcakYolcuBilgileri from "./pages/UcakYolcuBilgileri";
 import UcakOdeme from "./pages/UcakOdeme";
