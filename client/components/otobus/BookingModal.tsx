@@ -9,6 +9,9 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
   const [loadingCardJs, setLoadingCardJs] = useState(false);
   const cardFormRef = useRef<HTMLFormElement | null>(null);
 
+  const [reservation, setReservation] = useState<any | null>(null);
+  const [voucherOpen, setVoucherOpen] = useState(false);
+
   useEffect(() => {
     if (!open) {
       setStep("seats");
