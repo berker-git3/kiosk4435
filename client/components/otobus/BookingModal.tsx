@@ -162,11 +162,22 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+      // Read body once (some environments may have the body stream already consumed)
+      const text = await res.text();
       if (!res.ok) {
-        const t = await res.text();
-        throw new Error(t || "Vakıf init failed");
+        let msg = text || "Vakıf init failed";
+        try {
+          const parsed = JSON.parse(text);
+          if (parsed && parsed.error) msg = parsed.error;
+        } catch {}
+        throw new Error(msg);
       }
-      const data = await res.json();
+      let data: any = {};
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        throw new Error("Invalid JSON from Vakif init response");
+      }
       const form = gatewayFormRef.current;
       if (!form) return;
       form.action = data.gatewayUrl;
