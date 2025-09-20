@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 // Booking modal with seat map -> passenger info -> payment (Card.js) flow
 export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
   const [step, setStep] = useState<"seats" | "passengers" | "payment">("seats");
-  const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
+  const [selectedSeats, setSelectedSeats] = useState<{ seat: number; gender: string | null }[]>([]);
   const [passengers, setPassengers] = useState<any[]>([]);
   const [loadingCardJs, setLoadingCardJs] = useState(false);
   const cardFormRef = useRef<HTMLFormElement | null>(null);
