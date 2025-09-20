@@ -42,16 +42,31 @@ export default function OtobusSonuclar() {
   const date = q.get("date") || "";
   const [filters, setFilters] = useState({ search: "", operators: new Set<string>(), time: "" });
 
+  const toggleOperator = (name: string) => {
+    setFilters((s) => {
+      const set = new Set(Array.from(s.operators));
+      if (set.has(name)) set.delete(name);
+      else set.add(name);
+      return { ...s, operators: set };
+    });
+  };
+
   const results = useMemo(() => {
     let data = MOCK.slice();
     if (filters.search) {
-      data = data.filter((r) => r.operator.toLowerCase().includes(filters.search.toLowerCase()));
+      data = data.filter((r) => r.operator.toLowerCase().includes(filters.search.toLowerCase()) || r.depart.includes(filters.search));
     }
-    if (filters.operators.size) {
+    if (filters.operators && filters.operators.size) {
       data = data.filter((r) => filters.operators.has(r.operator));
     }
     return data;
   }, [filters]);
+
+  const operators = [
+    { name: "Pamukkale", count: MOCK.filter((m) => m.operator === "Pamukkale").length, checked: filters.operators.has("Pamukkale") },
+    { name: "Flixbus", count: MOCK.filter((m) => m.operator === "Flixbus").length, checked: filters.operators.has("Flixbus") },
+    { name: "Metro", count: MOCK.filter((m) => m.operator === "Metro").length, checked: filters.operators.has("Metro") },
+  ];
 
   return (
     <div className="w-full">
@@ -67,7 +82,7 @@ export default function OtobusSonuclar() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] gap-6">
-          <FilterSidebar value={{ search: filters.search }} onChange={(v:any) => setFilters((s)=>({ ...s, search: v.search }))} onReset={() => setFilters({ search: "", operators: new Set(), time: "" })} />
+          <FilterSidebar operators={operators} onToggleOperator={toggleOperator} onReset={() => setFilters({ search: "", operators: new Set(), time: "" })} />
 
           <section>
             <div className="space-y-4">
