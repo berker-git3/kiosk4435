@@ -51,7 +51,8 @@ export default function App() {
                   path="/ucak-bileti/rezervasyon"
                   element={<UcakRezervasyon />}
                 />
-                <Route path="/otobus-bileti" element={<Placeholder />} />
+                <Route path="/otobus-bileti" element={<OtobusBileti />} />
+                <Route path="/otobus-bileti/sonuclar" element={<OtobusSonuclar />} />
                 <Route path="/destek" element={<Placeholder />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
