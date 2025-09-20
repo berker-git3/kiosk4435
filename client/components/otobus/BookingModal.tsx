@@ -19,9 +19,23 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
 
   if (!open || !trip) return null;
 
-  // Build a seat map (rows x cols) based on 54 seats as example, mimic image layout
+  // Build a seat map (rows x cols) based on 54 seats as example, can be overridden by seatmap JSON in /assets/seatmaps/{trip.id}.json
   const seatCount = 54;
-  const seatsPerRow = useMemo(() => [2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4], []);
+  const [seatLayout, setSeatLayout] = useState<number[][] | null>(null);
+  useEffect(() => {
+    // try to load seatmap JSON uploaded to public/assets/seatmaps/{trip.id}.json
+    const url = `/assets/seatmaps/${trip.id || 'default'}.json`;
+    fetch(url)
+      .then((r) => {
+        if (!r.ok) throw new Error('not found');
+        return r.json();
+      })
+      .then((data) => {
+        // expected format: array of rows, each row is array of numbers or null for empty space
+        if (Array.isArray(data)) setSeatLayout(data as number[][]);
+      })
+      .catch(() => setSeatLayout(null));
+  }, [trip]);
 
   // Determine occupied seats: use trip.occupied if provided, otherwise simulate
   const occupiedSet = useMemo(() => new Set<number>(trip.occupied || [3, 7, 12, 28, 33, 45]), [trip]);
