@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function FilterSidebar({ value, onChange, onReset }: any) {
+export default function FilterSidebar({ value, onChange, onReset, operators, onToggleOperator }: any) {
   return (
     <aside className="w-full md:w-72 lg:w-80 bg-white border rounded-xl p-4 md:sticky md:top-6">
       <div className="flex items-center justify-between mb-3">
@@ -31,9 +31,14 @@ export default function FilterSidebar({ value, onChange, onReset }: any) {
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1">İşletmeciler</label>
           <div className="grid grid-cols-1 gap-2">
-            <label className="flex items-center justify-between"><span className="flex items-center gap-2"><input type="checkbox" className="accent-red-600" /> Pamukkale</span><span className="text-slate-500">2</span></label>
-            <label className="flex items-center justify-between"><span className="flex items-center gap-2"><input type="checkbox" className="accent-red-600" /> Flixbus</span><span className="text-slate-500">1</span></label>
-            <label className="flex items-center justify-between"><span className="flex items-center gap-2"><input type="checkbox" className="accent-red-600" /> Metro</span><span className="text-slate-500">0</span></label>
+            {(operators || []).map((op: any) => (
+              <label key={op.name} className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <input type="checkbox" checked={op.checked} onChange={() => onToggleOperator && onToggleOperator(op.name)} className="accent-red-600" /> {op.name}
+                </span>
+                <span className="text-slate-500">{op.count}</span>
+              </label>
+            ))}
           </div>
         </div>
 
