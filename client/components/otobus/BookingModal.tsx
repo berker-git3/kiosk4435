@@ -135,14 +135,18 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
 
   const confirmBooking = (paymentResult?: any) => {
     // collate booking
+    const code = (Math.random().toString(36).toUpperCase().slice(2, 10)).replace(/[^A-Z0-9]/g, "0").slice(0, 8);
     const booking = {
-      trip,
+      code,
+      trip: { ...trip },
       seats: selectedSeats,
       passengers,
       payment: paymentResult || { method: "card" },
+      createdAt: new Date().toISOString(),
     };
+    setReservation(booking);
+    setVoucherOpen(true);
     onConfirm && onConfirm(booking);
-    onClose && onClose();
   };
 
   const handleVakifPayment = async () => {
