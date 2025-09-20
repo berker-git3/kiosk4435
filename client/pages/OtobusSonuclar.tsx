@@ -111,6 +111,45 @@ export default function OtobusSonuclar() {
   const [quick, setQuick] = useState({ eTicket: false, direct: false });
   const [time, setTime] = useState({ early: false, noon: false, night: false });
 
+  // Booking modal state
+  const [selectedTrip, setSelectedTrip] = useState<any>(null);
+  const [bookingOpen, setBookingOpen] = useState(false);
+
+  // Read initial filters from URL on mount
+  React.useEffect(() => {
+    const qs = new URLSearchParams(window.location.search);
+    const ops = qs.get("operators");
+    const opSet = new Set<string>();
+    if (ops) ops.split(",").forEach((o) => opSet.add(decodeURIComponent(o)));
+    setFilters((s:any) => ({ ...s, operators: opSet }));
+    setQuick({ eTicket: qs.get("eticket") === "1", direct: qs.get("direct") === "1" });
+    const t = qs.get("time");
+    if (t) {
+      setTime({ early: t.includes("early"), noon: t.includes("noon"), night: t.includes("night") });
+    }
+    const search = qs.get("search") || "";
+    setFilters((s:any) => ({ ...s, search }));
+  }, []);
+
+  // Sync filters to URL
+  const syncUrl = () => {
+    const params = new URLSearchParams();
+    if (filters.search) params.set("search", filters.search);
+    if (filters.operators && filters.operators.size) params.set("operators", Array.from(filters.operators).map(encodeURIComponent).join(","));
+    if (quick.eTicket) params.set("eticket", "1");
+    if (quick.direct) params.set("direct", "1");
+    const times: string[] = [];
+    if (time.early) times.push("early");
+    if (time.noon) times.push("noon");
+    if (time.night) times.push("night");
+    if (times.length) params.set("time", times.join(","));
+    navigate({ search: params.toString() }, { replace: true });
+  };
+
+  React.useEffect(() => {
+    syncUrl();
+  }, [filters.search, Array.from(filters.operators || []), quick.eTicket, quick.direct, time.early, time.noon, time.night]);
+
   const onToggleQuick = (key: string) => {
     setQuick((s) => ({ ...s, [key]: !s[key as keyof typeof s] }));
   };
@@ -121,7 +160,7 @@ export default function OtobusSonuclar() {
   const results = useMemo(() => {
     let data = MOCK.slice();
     if (filters.search) {
-      data = data.filter((r) => r.operator.toLowerCase().includes(filters.search.toLowerCase()) || r.depart.includes(filters.search));
+      data = data.filter((r) => r.operator.toLowerCase().includes(filters.search.toLowerCase()) || r.depart.includes(filters.search) || r.from.toLowerCase().includes(filters.search.toLowerCase()) || r.to.toLowerCase().includes(filters.search.toLowerCase()));
     }
     if (filters.operators && filters.operators.size) {
       data = data.filter((r) => filters.operators.has(r.operator));
@@ -143,6 +182,17 @@ export default function OtobusSonuclar() {
   const quickFilters = { eTicket: quick.eTicket, direct: quick.direct };
 
   const timeFilters = { early: time.early, noon: time.noon, night: time.night, counts: timeCounts };
+
+  const onSelectTrip = (trip: any) => {
+    setSelectedTrip(trip);
+    setBookingOpen(true);
+  };
+
+  const onConfirmBooking = ({ trip, seats }: any) => {
+    // For now simulate booking and show a success alert
+    const code = (Math.random().toString(36).toUpperCase().slice(2, 10));
+    alert(`Rezervasyon başarılı: ${trip.operator} ${trip.depart} - Kod: ${code} (Koltuk: ${seats})`);
+  };
 
   return (
     <div className="w-full">
