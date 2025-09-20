@@ -43,15 +43,16 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
   const toggleSeat = (n: number) => {
     if (occupiedSet.has(n)) return;
     setSelectedSeats((s) => {
-      if (s.includes(n)) return s.filter((x) => x !== n);
-      return [...s, n].sort((a, b) => a - b);
+      const exists = s.find((it) => it.seat === n);
+      if (exists) return s.filter((x) => x.seat !== n);
+      return [...s, { seat: n, gender: null }].sort((a, b) => a.seat - b.seat);
     });
   };
 
   useEffect(() => {
     // make sure passengers array matches selectedSeats
     setPassengers((p) => {
-      const next = selectedSeats.map((s, i) => p[i] || { seat: s, name: "", surname: "", tc: "", phone: "", email: "", extras: [], note: "" });
+      const next = selectedSeats.map((s, i) => p[i] || { seat: s.seat, name: "", surname: "", tc: "", phone: "", email: "", extras: [], note: "", gender: s.gender || null });
       return next;
     });
   }, [selectedSeats]);
