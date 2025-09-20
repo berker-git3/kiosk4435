@@ -15,10 +15,13 @@ import TurDetay from "./pages/TurDetay";
 import Videolar from "./pages/Videolar";
 import YatKiralama from "./pages/YatKiralama";
 import YatDetay from "./pages/YatDetay";
+import AracKiralama from "./pages/AracKiralama";
 import UcakBileti from "./pages/UcakBileti";
 import UcakYolcuBilgileri from "./pages/UcakYolcuBilgileri";
 import UcakOdeme from "./pages/UcakOdeme";
 import UcakRezervasyon from "./pages/UcakRezervasyon";
+import OtobusBileti from "./pages/OtobusBileti";
+import OtobusSonuclar from "./pages/OtobusSonuclar";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +42,7 @@ export default function App() {
                 <Route path="/videolar" element={<Videolar />} />
                 <Route path="/yat-kiralama" element={<YatKiralama />} />
                 <Route path="/yat-kiralama/:id" element={<YatDetay />} />
+                <Route path="/arac-kiralama" element={<AracKiralama />} />
                 <Route path="/ucak-bileti" element={<UcakBileti />} />
                 <Route
                   path="/ucak-bileti/yolcu-bilgileri"
@@ -49,7 +53,11 @@ export default function App() {
                   path="/ucak-bileti/rezervasyon"
                   element={<UcakRezervasyon />}
                 />
-                <Route path="/otobus-bileti" element={<Placeholder />} />
+                <Route path="/otobus-bileti" element={<OtobusBileti />} />
+                <Route
+                  path="/otobus-bileti/sonuclar"
+                  element={<OtobusSonuclar />}
+                />
                 <Route path="/destek" element={<Placeholder />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />

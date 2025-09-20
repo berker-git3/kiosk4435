@@ -320,6 +320,23 @@
     0 4px 10px rgba(220, 38, 38, 0.06);
 }
 
+/* Mirror styles for Card.js preview wrapper */
+.card-wrapper {
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.12s ease;
+}
+.card-wrapper.card-valid {
+  box-shadow:
+    0 10px 30px rgba(34, 197, 94, 0.12),
+    0 4px 10px rgba(34, 197, 94, 0.06);
+}
+.card-wrapper.card-invalid {
+  box-shadow:
+    0 10px 30px rgba(220, 38, 38, 0.12),
+    0 4px 10px rgba(220, 38, 38, 0.06);
+}
+
 #card-inner.pulse {
   animation: card-pulse 1s ease-in-out;
 }
