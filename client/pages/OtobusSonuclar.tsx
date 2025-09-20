@@ -15,6 +15,8 @@ const MOCK = [
     arrive: "13:25",
     duration: "2s 55dk",
     price: 900,
+    eTicket: true,
+    direct: true,
   },
   {
     id: "2",
@@ -23,6 +25,8 @@ const MOCK = [
     arrive: "15:50",
     duration: "3s 20dk",
     price: 1000,
+    eTicket: false,
+    direct: true,
   },
   {
     id: "3",
@@ -31,6 +35,18 @@ const MOCK = [
     arrive: "09:30",
     duration: "2s 30dk",
     price: 797,
+    eTicket: true,
+    direct: false,
+  },
+  {
+    id: "4",
+    operator: "Metro",
+    depart: "18:15",
+    arrive: "21:50",
+    duration: "3s 35dk",
+    price: 850,
+    eTicket: false,
+    direct: false,
   },
 ];
 
