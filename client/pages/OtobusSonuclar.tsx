@@ -98,9 +98,41 @@ export default function OtobusSonuclar() {
     { name: "Metro", count: MOCK.filter((m) => m.operator === "Metro").length, checked: filters.operators.has("Metro") },
   ];
 
-  const quickFilters = { eTicket: false, direct: false };
+  const [quick, setQuick] = useState({ eTicket: false, direct: false });
+  const [time, setTime] = useState({ early: false, noon: false, night: false });
 
-  const timeFilters = { early: false, noon: false, night: false, counts: timeCounts };
+  const onToggleQuick = (key: string) => {
+    setQuick((s) => ({ ...s, [key]: !s[key as keyof typeof s] }));
+  };
+  const onToggleTime = (key: string) => {
+    setTime((s) => ({ ...s, [key]: !s[key as keyof typeof s] }));
+  };
+
+  const results = useMemo(() => {
+    let data = MOCK.slice();
+    if (filters.search) {
+      data = data.filter((r) => r.operator.toLowerCase().includes(filters.search.toLowerCase()) || r.depart.includes(filters.search));
+    }
+    if (filters.operators && filters.operators.size) {
+      data = data.filter((r) => filters.operators.has(r.operator));
+    }
+    if (quick.eTicket) data = data.filter((r) => r.eTicket);
+    if (quick.direct) data = data.filter((r) => r.direct);
+    if (time.early || time.noon || time.night) {
+      data = data.filter((r) => {
+        const b = getTimeBucket(r.depart);
+        if (time.early && b === "early") return true;
+        if (time.noon && b === "noon") return true;
+        if (time.night && b === "night") return true;
+        return false;
+      });
+    }
+    return data;
+  }, [filters, quick, time]);
+
+  const quickFilters = { eTicket: quick.eTicket, direct: quick.direct };
+
+  const timeFilters = { early: time.early, noon: time.noon, night: time.night, counts: timeCounts };
 
   return (
     <div className="w-full">
