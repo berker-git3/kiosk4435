@@ -180,8 +180,23 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      // Read body once (some environments may have the body stream already consumed)
-      const text = await res.text();
+
+      // Try reading response text safely even if the body was consumed elsewhere
+      let text = "";
+      try {
+        text = await res.text();
+      } catch (e1) {
+        console.warn("[BookingModal] primary res.text() failed, attempting clone():", e1);
+        try {
+          if ((res as any).clone) {
+            text = await (res as any).clone().text();
+          }
+        } catch (e2) {
+          console.error("[BookingModal] failed to read response body even after clone", e2);
+          throw e2 || e1;
+        }
+      }
+
       if (!res.ok) {
         let msg = text || "Vakıf init failed";
         try {
@@ -190,14 +205,21 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
         } catch {}
         throw new Error(msg);
       }
+
       let data: any = {};
       try {
         data = JSON.parse(text);
       } catch (e) {
         throw new Error("Invalid JSON from Vakif init response");
       }
+
       const form = gatewayFormRef.current;
       if (!form) return;
+      if (!data || !data.gatewayUrl || !data.fields) {
+        console.error("[BookingModal] Vakif init returned invalid payload", data);
+        throw new Error("Vakıf init returned invalid payload");
+      }
+
       form.action = data.gatewayUrl;
       form.method = "POST";
       while (form.firstChild) form.removeChild(form.firstChild);
@@ -212,7 +234,7 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
     } catch (err: any) {
       console.error("[BookingModal] Vakif init error", err);
       alert("Ödeme başlatılamadı, rezervasyon lokal olarak kaydedildi.");
-      confirmBooking({ method: "card", fallback: true });
+      confirmBooking({ method: "vakif", fallback: true, error: String(err?.message || err) });
     }
   };
 
@@ -222,7 +244,7 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
         <div className="p-4 border-b flex items-center justify-between">
           <h3 className="font-semibold">{trip.operator} - {trip.depart} → {trip.arrive}</h3>
           <div className="flex items-center gap-2">
-            <div className="text-sm text-slate-500">Adımlar: Koltuk → Yolcu → Ödeme</div>
+            <div className="text-sm text-slate-500">Adımlar: Koltuk → Yolcu → ��deme</div>
             <button onClick={onClose} className="px-3 py-1 rounded border">Kapat</button>
           </div>
         </div>
