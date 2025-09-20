@@ -356,6 +356,7 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
           <form ref={(el) => (gatewayFormRef.current = el)} style={{ display: "none" }} />
         </div>
       </div>
+      <VoucherModal open={voucherOpen} reservation={reservation} onClose={() => { setVoucherOpen(false); onClose && onClose(); }} />
     </div>
   );
 }
