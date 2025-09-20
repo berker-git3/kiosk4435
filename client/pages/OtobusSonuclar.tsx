@@ -209,7 +209,7 @@ export default function OtobusSonuclar() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] gap-6">
-          <FilterSidebar operators={operators} onToggleOperator={toggleOperator} quickFilters={quickFilters} onToggleQuickFilter={() => {}} timeFilters={timeFilters} onToggleTimeFilter={() => {}} onReset={() => setFilters({ search: "", operators: new Set(), time: "" })} />
+          <FilterSidebar operators={operators} onToggleOperator={toggleOperator} quickFilters={quickFilters} onToggleQuickFilter={onToggleQuick} timeFilters={timeFilters} onToggleTimeFilter={onToggleTime} onReset={() => setFilters({ search: "", operators: new Set(), time: "" })} />
 
           <section>
             <div className="space-y-4">
