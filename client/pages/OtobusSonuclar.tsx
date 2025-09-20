@@ -149,7 +149,17 @@ export default function OtobusSonuclar() {
 
   React.useEffect(() => {
     syncUrl();
-  }, [filters.search, Array.from(filters.operators || []), quick.eTicket, quick.direct, time.early, time.noon, time.night]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    filters.search,
+    // use a stable string representation for operator set to avoid creating a new array each render
+    filters.operators ? Array.from(filters.operators).sort().join(",") : "",
+    quick.eTicket,
+    quick.direct,
+    time.early,
+    time.noon,
+    time.night,
+  ]);
 
   const onToggleQuick = (key: string) => {
     setQuick((s) => ({ ...s, [key]: !s[key as keyof typeof s] }));
