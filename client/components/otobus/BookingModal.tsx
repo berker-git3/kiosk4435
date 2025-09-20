@@ -152,6 +152,24 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
     onConfirm && onConfirm(booking);
   };
 
+  // Detect gateway return page storing a marker in localStorage and show voucher
+  useEffect(() => {
+    if (!open) return;
+    try {
+      const raw = window.localStorage.getItem("payment_result");
+      if (raw) {
+        window.localStorage.removeItem("payment_result");
+        const pr = JSON.parse(raw);
+        if (pr && pr.success) {
+          console.log("[BookingModal] detected payment_result from gateway, confirming booking");
+          confirmBooking({ method: "vakif", gatewayResult: pr });
+        }
+      }
+    } catch (e) {
+      console.error("[BookingModal] error reading payment_result", e);
+    }
+  }, [open]);
+
   const handleVakifPayment = async () => {
     const orderId = `BUS-${Date.now()}`;
     const amount = selectedSeats.length * trip.price;
