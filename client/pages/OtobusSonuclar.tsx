@@ -202,6 +202,9 @@ export default function OtobusSonuclar() {
           <div>
             <h1 className="text-2xl font-semibold">{from || "Nereden"} → {to || "Nereye"}</h1>
             <div className="text-sm text-slate-500">{date || "Tarih seçilmedi"}</div>
+            <div className="mt-3">
+              <input value={filters.search} onChange={(e) => setFilters((s:any)=>({ ...s, search: e.target.value }))} placeholder="Filtre veya operatör ara" className="w-full md:w-80 rounded-md border px-3 py-2" />
+            </div>
           </div>
           <div>
             <Button className="bg-red-600 text-white" onClick={() => navigate(-1)}>Yeni Arama</Button>
