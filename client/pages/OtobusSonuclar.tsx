@@ -78,7 +78,11 @@ export default function OtobusSonuclar() {
   const from = q.get("from") || "";
   const to = q.get("to") || "";
   const date = q.get("date") || "";
-  const [filters, setFilters] = useState({ search: "", operators: new Set<string>(), time: "" });
+  const [filters, setFilters] = useState({
+    search: "",
+    operators: new Set<string>(),
+    time: "",
+  });
 
   const toggleOperator = (name: string) => {
     setFilters((s) => {
@@ -104,9 +108,21 @@ export default function OtobusSonuclar() {
   };
 
   const operators = [
-    { name: "Pamukkale", count: MOCK.filter((m) => m.operator === "Pamukkale").length, checked: filters.operators.has("Pamukkale") },
-    { name: "Flixbus", count: MOCK.filter((m) => m.operator === "Flixbus").length, checked: filters.operators.has("Flixbus") },
-    { name: "Metro", count: MOCK.filter((m) => m.operator === "Metro").length, checked: filters.operators.has("Metro") },
+    {
+      name: "Pamukkale",
+      count: MOCK.filter((m) => m.operator === "Pamukkale").length,
+      checked: filters.operators.has("Pamukkale"),
+    },
+    {
+      name: "Flixbus",
+      count: MOCK.filter((m) => m.operator === "Flixbus").length,
+      checked: filters.operators.has("Flixbus"),
+    },
+    {
+      name: "Metro",
+      count: MOCK.filter((m) => m.operator === "Metro").length,
+      checked: filters.operators.has("Metro"),
+    },
   ];
 
   const [quick, setQuick] = useState({ eTicket: false, direct: false });
@@ -122,21 +138,32 @@ export default function OtobusSonuclar() {
     const ops = qs.get("operators");
     const opSet = new Set<string>();
     if (ops) ops.split(",").forEach((o) => opSet.add(decodeURIComponent(o)));
-    setFilters((s:any) => ({ ...s, operators: opSet }));
-    setQuick({ eTicket: qs.get("eticket") === "1", direct: qs.get("direct") === "1" });
+    setFilters((s: any) => ({ ...s, operators: opSet }));
+    setQuick({
+      eTicket: qs.get("eticket") === "1",
+      direct: qs.get("direct") === "1",
+    });
     const t = qs.get("time");
     if (t) {
-      setTime({ early: t.includes("early"), noon: t.includes("noon"), night: t.includes("night") });
+      setTime({
+        early: t.includes("early"),
+        noon: t.includes("noon"),
+        night: t.includes("night"),
+      });
     }
     const search = qs.get("search") || "";
-    setFilters((s:any) => ({ ...s, search }));
+    setFilters((s: any) => ({ ...s, search }));
   }, []);
 
   // Sync filters to URL
   const syncUrl = () => {
     const params = new URLSearchParams();
     if (filters.search) params.set("search", filters.search);
-    if (filters.operators && filters.operators.size) params.set("operators", Array.from(filters.operators).map(encodeURIComponent).join(","));
+    if (filters.operators && filters.operators.size)
+      params.set(
+        "operators",
+        Array.from(filters.operators).map(encodeURIComponent).join(","),
+      );
     if (quick.eTicket) params.set("eticket", "1");
     if (quick.direct) params.set("direct", "1");
     const times: string[] = [];
@@ -171,7 +198,13 @@ export default function OtobusSonuclar() {
   const results = useMemo(() => {
     let data = MOCK.slice();
     if (filters.search) {
-      data = data.filter((r) => r.operator.toLowerCase().includes(filters.search.toLowerCase()) || r.depart.includes(filters.search) || r.from.toLowerCase().includes(filters.search.toLowerCase()) || r.to.toLowerCase().includes(filters.search.toLowerCase()));
+      data = data.filter(
+        (r) =>
+          r.operator.toLowerCase().includes(filters.search.toLowerCase()) ||
+          r.depart.includes(filters.search) ||
+          r.from.toLowerCase().includes(filters.search.toLowerCase()) ||
+          r.to.toLowerCase().includes(filters.search.toLowerCase()),
+      );
     }
     if (filters.operators && filters.operators.size) {
       data = data.filter((r) => filters.operators.has(r.operator));
@@ -192,7 +225,12 @@ export default function OtobusSonuclar() {
 
   const quickFilters = { eTicket: quick.eTicket, direct: quick.direct };
 
-  const timeFilters = { early: time.early, noon: time.noon, night: time.night, counts: timeCounts };
+  const timeFilters = {
+    early: time.early,
+    noon: time.noon,
+    night: time.night,
+    counts: timeCounts,
+  };
 
   const onSelectTrip = (trip: any) => {
     setSelectedTrip(trip);
@@ -201,8 +239,10 @@ export default function OtobusSonuclar() {
 
   const onConfirmBooking = ({ trip, seats }: any) => {
     // For now simulate booking and show a success alert
-    const code = (Math.random().toString(36).toUpperCase().slice(2, 10));
-    alert(`Rezervasyon başarılı: ${trip.operator} ${trip.depart} - Kod: ${code} (Koltuk: ${seats})`);
+    const code = Math.random().toString(36).toUpperCase().slice(2, 10);
+    alert(
+      `Rezervasyon başarılı: ${trip.operator} ${trip.depart} - Kod: ${code} (Koltuk: ${seats})`,
+    );
   };
 
   return (
@@ -210,19 +250,45 @@ export default function OtobusSonuclar() {
       <div className="container mx-auto py-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-semibold">{from || "Nereden"} → {to || "Nereye"}</h1>
-            <div className="text-sm text-slate-500">{date || "Tarih seçilmedi"}</div>
+            <h1 className="text-2xl font-semibold">
+              {from || "Nereden"} → {to || "Nereye"}
+            </h1>
+            <div className="text-sm text-slate-500">
+              {date || "Tarih seçilmedi"}
+            </div>
             <div className="mt-3">
-              <input value={filters.search} onChange={(e) => setFilters((s:any)=>({ ...s, search: e.target.value }))} placeholder="Filtre veya operatör ara" className="w-full md:w-80 rounded-md border px-3 py-2" />
+              <input
+                value={filters.search}
+                onChange={(e) =>
+                  setFilters((s: any) => ({ ...s, search: e.target.value }))
+                }
+                placeholder="Filtre veya operatör ara"
+                className="w-full md:w-80 rounded-md border px-3 py-2"
+              />
             </div>
           </div>
           <div>
-            <Button className="bg-red-600 text-white" onClick={() => navigate(-1)}>Yeni Arama</Button>
+            <Button
+              className="bg-red-600 text-white"
+              onClick={() => navigate(-1)}
+            >
+              Yeni Arama
+            </Button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] gap-6">
-          <FilterSidebar operators={operators} onToggleOperator={toggleOperator} quickFilters={quickFilters} onToggleQuickFilter={onToggleQuick} timeFilters={timeFilters} onToggleTimeFilter={onToggleTime} onReset={() => setFilters({ search: "", operators: new Set(), time: "" })} />
+          <FilterSidebar
+            operators={operators}
+            onToggleOperator={toggleOperator}
+            quickFilters={quickFilters}
+            onToggleQuickFilter={onToggleQuick}
+            timeFilters={timeFilters}
+            onToggleTimeFilter={onToggleTime}
+            onReset={() =>
+              setFilters({ search: "", operators: new Set(), time: "" })
+            }
+          />
 
           <section>
             <div className="space-y-4">
@@ -231,12 +297,19 @@ export default function OtobusSonuclar() {
               ))}
 
               {results.length === 0 && (
-                <div className="p-6 border rounded text-center">Sefer bulunamadı.</div>
+                <div className="p-6 border rounded text-center">
+                  Sefer bulunamadı.
+                </div>
               )}
             </div>
             {bookingOpen && (
               <React.Suspense>
-                <BookingModal open={bookingOpen} trip={selectedTrip} onClose={() => setBookingOpen(false)} onConfirm={onConfirmBooking} />
+                <BookingModal
+                  open={bookingOpen}
+                  trip={selectedTrip}
+                  onClose={() => setBookingOpen(false)}
+                  onConfirm={onConfirmBooking}
+                />
               </React.Suspense>
             )}
           </section>

@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 
-export default function OperatorLogo({ name, size = 48 }: { name: string; size?: number }) {
+export default function OperatorLogo({
+  name,
+  size = 48,
+}: {
+  name: string;
+  size?: number;
+}) {
   const initials = name
     .split(" ")
     .map((s) => s.charAt(0))
@@ -14,7 +20,10 @@ export default function OperatorLogo({ name, size = 48 }: { name: string; size?:
   const [imgError, setImgError] = useState(false);
 
   return (
-    <div style={{ width: size, height: size }} className="flex items-center justify-center rounded-full overflow-hidden">
+    <div
+      style={{ width: size, height: size }}
+      className="flex items-center justify-center rounded-full overflow-hidden"
+    >
       {!imgError ? (
         // try svg then png
         <img
@@ -30,7 +39,10 @@ export default function OperatorLogo({ name, size = 48 }: { name: string; size?:
           style={{ width: size, height: size, objectFit: "cover" }}
         />
       ) : (
-        <div className="flex items-center justify-center rounded-full bg-red-600 text-white font-semibold" style={{ width: size, height: size }}>
+        <div
+          className="flex items-center justify-center rounded-full bg-red-600 text-white font-semibold"
+          style={{ width: size, height: size }}
+        >
           <span style={{ fontSize: Math.max(12, size / 3) }}>{initials}</span>
         </div>
       )}

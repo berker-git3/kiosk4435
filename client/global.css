@@ -322,7 +322,9 @@
 
 /* Mirror styles for Card.js preview wrapper */
 .card-wrapper {
-  transition: box-shadow 0.2s ease, transform 0.12s ease;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.12s ease;
 }
 .card-wrapper.card-valid {
   box-shadow:

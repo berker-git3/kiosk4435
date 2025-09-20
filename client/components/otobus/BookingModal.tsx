@@ -5,7 +5,9 @@ import VoucherModal from "./VoucherModal";
 // Booking modal with seat map -> passenger info -> payment (Card.js) flow
 export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
   const [step, setStep] = useState<"seats" | "passengers" | "payment">("seats");
-  const [selectedSeats, setSelectedSeats] = useState<{ seat: number; gender: string | null }[]>([]);
+  const [selectedSeats, setSelectedSeats] = useState<
+    { seat: number; gender: string | null }[]
+  >([]);
   const [passengers, setPassengers] = useState<any[]>([]);
   const [loadingCardJs, setLoadingCardJs] = useState(false);
   const cardFormRef = useRef<HTMLFormElement | null>(null);
@@ -28,10 +30,10 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
   const [seatLayout, setSeatLayout] = useState<number[][] | null>(null);
   useEffect(() => {
     // try to load seatmap JSON uploaded to public/assets/seatmaps/{trip.id}.json
-    const url = `/assets/seatmaps/${trip.id || 'default'}.json`;
+    const url = `/assets/seatmaps/${trip.id || "default"}.json`;
     fetch(url)
       .then((r) => {
-        if (!r.ok) throw new Error('not found');
+        if (!r.ok) throw new Error("not found");
         return r.json();
       })
       .then((data) => {
@@ -42,7 +44,10 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
   }, [trip]);
 
   // Determine occupied seats: use trip.occupied if provided, otherwise simulate
-  const occupiedSet = useMemo(() => new Set<number>(trip.occupied || [3, 7, 12, 28, 33, 45]), [trip]);
+  const occupiedSet = useMemo(
+    () => new Set<number>(trip.occupied || [3, 7, 12, 28, 33, 45]),
+    [trip],
+  );
 
   const toggleSeat = (n: number) => {
     if (occupiedSet.has(n)) return;
@@ -56,7 +61,20 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
   useEffect(() => {
     // make sure passengers array matches selectedSeats
     setPassengers((p) => {
-      const next = selectedSeats.map((s, i) => p[i] || { seat: s.seat, name: "", surname: "", tc: "", phone: "", email: "", extras: [], note: "", gender: s.gender || null });
+      const next = selectedSeats.map(
+        (s, i) =>
+          p[i] || {
+            seat: s.seat,
+            name: "",
+            surname: "",
+            tc: "",
+            phone: "",
+            email: "",
+            extras: [],
+            note: "",
+            gender: s.gender || null,
+          },
+      );
       return next;
     });
   }, [selectedSeats]);
@@ -136,7 +154,12 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
 
   const confirmBooking = (paymentResult?: any) => {
     // collate booking
-    const code = (Math.random().toString(36).toUpperCase().slice(2, 10)).replace(/[^A-Z0-9]/g, "0").slice(0, 8);
+    const code = Math.random()
+      .toString(36)
+      .toUpperCase()
+      .slice(2, 10)
+      .replace(/[^A-Z0-9]/g, "0")
+      .slice(0, 8);
     const booking = {
       code,
       trip: { ...trip },
@@ -161,7 +184,9 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
         window.localStorage.removeItem("payment_result");
         const pr = JSON.parse(raw);
         if (pr && pr.success) {
-          console.log("[BookingModal] detected payment_result from gateway, confirming booking");
+          console.log(
+            "[BookingModal] detected payment_result from gateway, confirming booking",
+          );
           confirmBooking({ method: "vakif", gatewayResult: pr });
         }
       }
@@ -174,7 +199,12 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
     const orderId = `BUS-${Date.now()}`;
     const amount = selectedSeats.length * trip.price;
     try {
-      const payload = { amount, orderId, currency: "TRY", description: `Bus ${trip.from}->${trip.to}` };
+      const payload = {
+        amount,
+        orderId,
+        currency: "TRY",
+        description: `Bus ${trip.from}->${trip.to}`,
+      };
       const res = await fetch("/api/payments/vakif/init", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -186,13 +216,19 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
       try {
         text = await res.text();
       } catch (e1) {
-        console.warn("[BookingModal] primary res.text() failed, attempting clone():", e1);
+        console.warn(
+          "[BookingModal] primary res.text() failed, attempting clone():",
+          e1,
+        );
         try {
           if ((res as any).clone) {
             text = await (res as any).clone().text();
           }
         } catch (e2) {
-          console.error("[BookingModal] failed to read response body even after clone", e2);
+          console.error(
+            "[BookingModal] failed to read response body even after clone",
+            e2,
+          );
           throw e2 || e1;
         }
       }
@@ -216,7 +252,10 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
       const form = gatewayFormRef.current;
       if (!form) return;
       if (!data || !data.gatewayUrl || !data.fields) {
-        console.error("[BookingModal] Vakif init returned invalid payload", data);
+        console.error(
+          "[BookingModal] Vakif init returned invalid payload",
+          data,
+        );
         throw new Error("Vakıf init returned invalid payload");
       }
 
@@ -234,7 +273,11 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
     } catch (err: any) {
       console.error("[BookingModal] Vakif init error", err);
       alert("Ödeme başlatılamadı, rezervasyon lokal olarak kaydedildi.");
-      confirmBooking({ method: "vakif", fallback: true, error: String(err?.message || err) });
+      confirmBooking({
+        method: "vakif",
+        fallback: true,
+        error: String(err?.message || err),
+      });
     }
   };
 
@@ -242,10 +285,16 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
     <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center overflow-auto bg-black/40 p-4">
       <div className="bg-white rounded-lg shadow-lg w-[min(1100px,98%)] max-h-[95vh] overflow-auto">
         <div className="p-4 border-b flex items-center justify-between">
-          <h3 className="font-semibold">{trip.operator} - {trip.depart} → {trip.arrive}</h3>
+          <h3 className="font-semibold">
+            {trip.operator} - {trip.depart} → {trip.arrive}
+          </h3>
           <div className="flex items-center gap-2">
-            <div className="text-sm text-slate-500">Adımlar: Koltuk → Yolcu → ��deme</div>
-            <button onClick={onClose} className="px-3 py-1 rounded border">Kapat</button>
+            <div className="text-sm text-slate-500">
+              Adımlar: Koltuk → Yolcu → ��deme
+            </div>
+            <button onClick={onClose} className="px-3 py-1 rounded border">
+              Kapat
+            </button>
           </div>
         </div>
 
@@ -253,30 +302,54 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
           {step === "seats" && (
             <div>
               <h4 className="font-medium mb-3">Koltuk Seçimi</h4>
-              <div className="mb-3 text-sm text-slate-600">Dolu koltuklar <span className="inline-block w-4 h-4 bg-red-600 ml-2 align-middle rounded-sm" /> , Boş koltuklar <span className="inline-block w-4 h-4 bg-green-500 ml-2 align-middle rounded-sm" /></div>
+              <div className="mb-3 text-sm text-slate-600">
+                Dolu koltuklar{" "}
+                <span className="inline-block w-4 h-4 bg-red-600 ml-2 align-middle rounded-sm" />{" "}
+                , Boş koltuklar{" "}
+                <span className="inline-block w-4 h-4 bg-green-500 ml-2 align-middle rounded-sm" />
+              </div>
               {seatLayout ? (
                 <div className="space-y-1">
                   {seatLayout.map((row, ri) => (
                     <div key={ri} className="flex gap-2">
                       {row.map((cell, ci) => {
-                        if (cell === null) return <div key={ci} className="w-8" />;
+                        if (cell === null)
+                          return <div key={ci} className="w-8" />;
                         const n = cell;
                         const isOcc = occupiedSet.has(n);
-                        const selObj = selectedSeats.find((it) => it.seat === n);
+                        const selObj = selectedSeats.find(
+                          (it) => it.seat === n,
+                        );
                         const isSel = !!selObj;
-                        const cls = isOcc ? "bg-red-600 cursor-not-allowed text-white" : isSel ? "bg-green-500 transform scale-105 shadow-lg text-white" : "bg-white hover:bg-green-100";
+                        const cls = isOcc
+                          ? "bg-red-600 cursor-not-allowed text-white"
+                          : isSel
+                            ? "bg-green-500 transform scale-105 shadow-lg text-white"
+                            : "bg-white hover:bg-green-100";
                         return (
                           <button
                             key={n}
                             onClick={() => toggleSeat(n)}
                             disabled={isOcc}
                             className={`w-8 h-8 flex items-center justify-center border rounded-md text-xs transition-all duration-150 ease-in-out ${cls} ${isSel ? "border-2 border-black" : "border-slate-200"}`}
-                            title={isSel ? `Seçili (${selObj?.gender || 'Cinsiyet seçilmeyen'})` : `Koltuk ${n}`}
+                            title={
+                              isSel
+                                ? `Seçili (${selObj?.gender || "Cinsiyet seçilmeyen"})`
+                                : `Koltuk ${n}`
+                            }
                           >
                             <div className="flex flex-col items-center">
                               <span>{n}</span>
-                              {selObj?.gender === 'female' && <span className="text-pink-600 text-[10px]">♀</span>}
-                              {selObj?.gender === 'male' && <span className="text-blue-600 text-[10px]">♂</span>}
+                              {selObj?.gender === "female" && (
+                                <span className="text-pink-600 text-[10px]">
+                                  ♀
+                                </span>
+                              )}
+                              {selObj?.gender === "male" && (
+                                <span className="text-blue-600 text-[10px]">
+                                  ♂
+                                </span>
+                              )}
                             </div>
                           </button>
                         );
@@ -285,25 +358,44 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
                   ))}
                 </div>
               ) : (
-                <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(12, 1fr)" }}>
+                <div
+                  className="grid gap-2"
+                  style={{ gridTemplateColumns: "repeat(12, 1fr)" }}
+                >
                   {Array.from({ length: seatCount }).map((_, idx) => {
                     const n = idx + 1;
                     const isOcc = occupiedSet.has(n);
                     const selObj = selectedSeats.find((it) => it.seat === n);
                     const isSel = !!selObj;
-                    const cls = isOcc ? "bg-red-600 cursor-not-allowed text-white" : isSel ? "bg-green-500 transform scale-105 shadow-lg text-white" : "bg-white hover:bg-green-100";
+                    const cls = isOcc
+                      ? "bg-red-600 cursor-not-allowed text-white"
+                      : isSel
+                        ? "bg-green-500 transform scale-105 shadow-lg text-white"
+                        : "bg-white hover:bg-green-100";
                     return (
                       <button
                         key={n}
                         onClick={() => toggleSeat(n)}
                         disabled={isOcc}
                         className={`border rounded-md p-2 text-xs transition-all duration-150 ease-in-out ${cls} ${isSel ? "border-2 border-black" : "border-slate-200"}`}
-                        title={isSel ? `Seçili (${selObj?.gender || 'Cinsiyet seçilmeyen'})` : `Koltuk ${n}`}
+                        title={
+                          isSel
+                            ? `Seçili (${selObj?.gender || "Cinsiyet seçilmeyen"})`
+                            : `Koltuk ${n}`
+                        }
                       >
                         <div className="flex flex-col items-center">
                           <span>{n}</span>
-                          {selObj?.gender === 'female' && <span className="text-pink-600 text-[10px]">♀</span>}
-                          {selObj?.gender === 'male' && <span className="text-blue-600 text-[10px]">♂</span>}
+                          {selObj?.gender === "female" && (
+                            <span className="text-pink-600 text-[10px]">
+                              ♀
+                            </span>
+                          )}
+                          {selObj?.gender === "male" && (
+                            <span className="text-blue-600 text-[10px]">
+                              ♂
+                            </span>
+                          )}
                         </div>
                       </button>
                     );
@@ -312,8 +404,18 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
               )}
 
               <div className="mt-4 flex items-center justify-end gap-3">
-                <button onClick={onClose} className="px-4 py-2 rounded-md border">İptal</button>
-                <Button className="bg-black text-white" onClick={proceedToPassengers}>Devam</Button>
+                <button
+                  onClick={onClose}
+                  className="px-4 py-2 rounded-md border"
+                >
+                  İptal
+                </button>
+                <Button
+                  className="bg-black text-white"
+                  onClick={proceedToPassengers}
+                >
+                  Devam
+                </Button>
               </div>
             </div>
           )}
@@ -328,35 +430,214 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
                     <div className="grid grid-cols-1 gap-2">
                       <div className="flex items-center gap-2">
                         <label className="text-sm">Cinsiyet:</label>
-                        <label className={`px-2 py-1 rounded border ${sObj.gender === 'male' ? 'bg-blue-100' : ''}`}>
-                          <input type="radio" name={`gender-${sObj.seat}`} checked={sObj.gender === 'male'} onChange={() => { setSelectedSeats((ss) => ss.map((x)=> x.seat===sObj.seat?{...x,gender:'male'}:x)); setPassengers((p)=>{ const c=[...p]; c[i]={...(c[i]||{}),gender:'male'}; return c; }); }} /> Erkek
+                        <label
+                          className={`px-2 py-1 rounded border ${sObj.gender === "male" ? "bg-blue-100" : ""}`}
+                        >
+                          <input
+                            type="radio"
+                            name={`gender-${sObj.seat}`}
+                            checked={sObj.gender === "male"}
+                            onChange={() => {
+                              setSelectedSeats((ss) =>
+                                ss.map((x) =>
+                                  x.seat === sObj.seat
+                                    ? { ...x, gender: "male" }
+                                    : x,
+                                ),
+                              );
+                              setPassengers((p) => {
+                                const c = [...p];
+                                c[i] = { ...(c[i] || {}), gender: "male" };
+                                return c;
+                              });
+                            }}
+                          />{" "}
+                          Erkek
                         </label>
-                        <label className={`px-2 py-1 rounded border ${sObj.gender === 'female' ? 'bg-pink-100' : ''}`}>
-                          <input type="radio" name={`gender-${sObj.seat}`} checked={sObj.gender === 'female'} onChange={() => { setSelectedSeats((ss) => ss.map((x)=> x.seat===sObj.seat?{...x,gender:'female'}:x)); setPassengers((p)=>{ const c=[...p]; c[i]={...(c[i]||{}),gender:'female'}; return c; }); }} /> Kadın
+                        <label
+                          className={`px-2 py-1 rounded border ${sObj.gender === "female" ? "bg-pink-100" : ""}`}
+                        >
+                          <input
+                            type="radio"
+                            name={`gender-${sObj.seat}`}
+                            checked={sObj.gender === "female"}
+                            onChange={() => {
+                              setSelectedSeats((ss) =>
+                                ss.map((x) =>
+                                  x.seat === sObj.seat
+                                    ? { ...x, gender: "female" }
+                                    : x,
+                                ),
+                              );
+                              setPassengers((p) => {
+                                const c = [...p];
+                                c[i] = { ...(c[i] || {}), gender: "female" };
+                                return c;
+                              });
+                            }}
+                          />{" "}
+                          Kadın
                         </label>
                       </div>
 
-                      <input placeholder="Ad" value={passengers[i]?.name || ""} onChange={(e) => setPassengers((p) => { const c = [...p]; c[i] = { ...(c[i] || {}), name: e.target.value, seat: sObj.seat }; return c; })} className="w-full rounded-md border px-3 py-2" />
-                      <input placeholder="Soyad" value={passengers[i]?.surname || ""} onChange={(e) => setPassengers((p) => { const c = [...p]; c[i] = { ...(c[i] || {}), surname: e.target.value, seat: sObj.seat }; return c; })} className="w-full rounded-md border px-3 py-2" />
-                      <input placeholder="TC Kimlik" value={passengers[i]?.tc || ""} onChange={(e) => setPassengers((p) => { const c = [...p]; c[i] = { ...(c[i] || {}), tc: e.target.value, seat: sObj.seat }; return c; })} className="w-full rounded-md border px-3 py-2" />
-                      <input placeholder="Telefon" value={passengers[i]?.phone || ""} onChange={(e) => setPassengers((p) => { const c = [...p]; c[i] = { ...(c[i] || {}), phone: e.target.value, seat: sObj.seat }; return c; })} className="w-full rounded-md border px-3 py-2" />
-                      <input placeholder="E-posta" value={passengers[i]?.email || ""} onChange={(e) => setPassengers((p) => { const c = [...p]; c[i] = { ...(c[i] || {}), email: e.target.value, seat: sObj.seat }; return c; })} className="w-full rounded-md border px-3 py-2" />
+                      <input
+                        placeholder="Ad"
+                        value={passengers[i]?.name || ""}
+                        onChange={(e) =>
+                          setPassengers((p) => {
+                            const c = [...p];
+                            c[i] = {
+                              ...(c[i] || {}),
+                              name: e.target.value,
+                              seat: sObj.seat,
+                            };
+                            return c;
+                          })
+                        }
+                        className="w-full rounded-md border px-3 py-2"
+                      />
+                      <input
+                        placeholder="Soyad"
+                        value={passengers[i]?.surname || ""}
+                        onChange={(e) =>
+                          setPassengers((p) => {
+                            const c = [...p];
+                            c[i] = {
+                              ...(c[i] || {}),
+                              surname: e.target.value,
+                              seat: sObj.seat,
+                            };
+                            return c;
+                          })
+                        }
+                        className="w-full rounded-md border px-3 py-2"
+                      />
+                      <input
+                        placeholder="TC Kimlik"
+                        value={passengers[i]?.tc || ""}
+                        onChange={(e) =>
+                          setPassengers((p) => {
+                            const c = [...p];
+                            c[i] = {
+                              ...(c[i] || {}),
+                              tc: e.target.value,
+                              seat: sObj.seat,
+                            };
+                            return c;
+                          })
+                        }
+                        className="w-full rounded-md border px-3 py-2"
+                      />
+                      <input
+                        placeholder="Telefon"
+                        value={passengers[i]?.phone || ""}
+                        onChange={(e) =>
+                          setPassengers((p) => {
+                            const c = [...p];
+                            c[i] = {
+                              ...(c[i] || {}),
+                              phone: e.target.value,
+                              seat: sObj.seat,
+                            };
+                            return c;
+                          })
+                        }
+                        className="w-full rounded-md border px-3 py-2"
+                      />
+                      <input
+                        placeholder="E-posta"
+                        value={passengers[i]?.email || ""}
+                        onChange={(e) =>
+                          setPassengers((p) => {
+                            const c = [...p];
+                            c[i] = {
+                              ...(c[i] || {}),
+                              email: e.target.value,
+                              seat: sObj.seat,
+                            };
+                            return c;
+                          })
+                        }
+                        className="w-full rounded-md border px-3 py-2"
+                      />
                       <div className="flex items-center gap-2 mt-2">
                         <label className="text-sm mr-2">Ek Hizmetler:</label>
-                        <label className="flex items-center gap-2"><input type="checkbox" onChange={(e) => setPassengers((p) => { const c = [...p]; const arr = (c[i]?.extras || []); if (e.target.checked) arr.push("bagage"); else { const idx = arr.indexOf("bagage"); if (idx > -1) arr.splice(idx, 1); } c[i] = { ...(c[i] || {}), extras: arr }; return c; })} /> Bagaj</label>
-                        <label className="flex items-center gap-2"><input type="checkbox" onChange={(e) => setPassengers((p) => { const c = [...p]; const arr = (c[i]?.extras || []); if (e.target.checked) arr.push("meal"); else { const idx = arr.indexOf("meal"); if (idx > -1) arr.splice(idx, 1); } c[i] = { ...(c[i] || {}), extras: arr }; return c; })} /> Yemek</label>
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            onChange={(e) =>
+                              setPassengers((p) => {
+                                const c = [...p];
+                                const arr = c[i]?.extras || [];
+                                if (e.target.checked) arr.push("bagage");
+                                else {
+                                  const idx = arr.indexOf("bagage");
+                                  if (idx > -1) arr.splice(idx, 1);
+                                }
+                                c[i] = { ...(c[i] || {}), extras: arr };
+                                return c;
+                              })
+                            }
+                          />{" "}
+                          Bagaj
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            onChange={(e) =>
+                              setPassengers((p) => {
+                                const c = [...p];
+                                const arr = c[i]?.extras || [];
+                                if (e.target.checked) arr.push("meal");
+                                else {
+                                  const idx = arr.indexOf("meal");
+                                  if (idx > -1) arr.splice(idx, 1);
+                                }
+                                c[i] = { ...(c[i] || {}), extras: arr };
+                                return c;
+                              })
+                            }
+                          />{" "}
+                          Yemek
+                        </label>
                       </div>
-                      <textarea placeholder="Not" value={passengers[i]?.note || ""} onChange={(e) => setPassengers((p) => { const c = [...p]; c[i] = { ...(c[i] || {}), note: e.target.value }; return c; })} className="w-full rounded-md border px-3 py-2 mt-2" />
+                      <textarea
+                        placeholder="Not"
+                        value={passengers[i]?.note || ""}
+                        onChange={(e) =>
+                          setPassengers((p) => {
+                            const c = [...p];
+                            c[i] = { ...(c[i] || {}), note: e.target.value };
+                            return c;
+                          })
+                        }
+                        className="w-full rounded-md border px-3 py-2 mt-2"
+                      />
                     </div>
                   </div>
                 ))}
               </div>
 
               <div className="mt-4 flex items-center justify-between">
-                <button onClick={() => setStep("seats")} className="px-4 py-2 rounded-md border">Geri</button>
+                <button
+                  onClick={() => setStep("seats")}
+                  className="px-4 py-2 rounded-md border"
+                >
+                  Geri
+                </button>
                 <div className="flex items-center gap-3">
-                  <button onClick={onClose} className="px-4 py-2 rounded-md border">İptal</button>
-                  <Button className="bg-black text-white" onClick={proceedToPayment}>Ödeme</Button>
+                  <button
+                    onClick={onClose}
+                    className="px-4 py-2 rounded-md border"
+                  >
+                    İptal
+                  </button>
+                  <Button
+                    className="bg-black text-white"
+                    onClick={proceedToPayment}
+                  >
+                    Ödeme
+                  </Button>
                 </div>
               </div>
             </div>
@@ -368,31 +649,71 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <div className="card-wrapper mb-4" />
-                  <form id="payment-form" ref={(el) => (cardFormRef.current = el)} className="space-y-3">
+                  <form
+                    id="payment-form"
+                    ref={(el) => (cardFormRef.current = el)}
+                    className="space-y-3"
+                  >
                     <div>
-                      <label className="block text-xs">Kart Üzerindeki İsim</label>
-                      <input id="card-name" name="name" className="w-full rounded-md border px-3 py-2" />
+                      <label className="block text-xs">
+                        Kart Üzerindeki İsim
+                      </label>
+                      <input
+                        id="card-name"
+                        name="name"
+                        className="w-full rounded-md border px-3 py-2"
+                      />
                     </div>
                     <div>
                       <label className="block text-xs">Kart Numarası</label>
-                      <input id="card-number" name="number" className="w-full rounded-md border px-3 py-2" />
+                      <input
+                        id="card-number"
+                        name="number"
+                        className="w-full rounded-md border px-3 py-2"
+                      />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-xs">Son Kullanma (MM/YY)</label>
-                        <input id="card-expiry" name="expiry" className="w-full rounded-md border px-3 py-2" />
+                        <label className="block text-xs">
+                          Son Kullanma (MM/YY)
+                        </label>
+                        <input
+                          id="card-expiry"
+                          name="expiry"
+                          className="w-full rounded-md border px-3 py-2"
+                        />
                       </div>
                       <div>
                         <label className="block text-xs">CVC</label>
-                        <input id="card-cvc" name="cvc" className="w-full rounded-md border px-3 py-2" />
+                        <input
+                          id="card-cvc"
+                          name="cvc"
+                          className="w-full rounded-md border px-3 py-2"
+                        />
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <button onClick={() => setStep("passengers")} type="button" className="px-4 py-2 rounded-md border">Geri</button>
+                      <button
+                        onClick={() => setStep("passengers")}
+                        type="button"
+                        className="px-4 py-2 rounded-md border"
+                      >
+                        Geri
+                      </button>
                       <div className="flex items-center gap-3">
-                        <button onClick={onClose} className="px-4 py-2 rounded-md border">İptal</button>
-                        <Button className="bg-black text-white" onClick={() => handleVakifPayment()}>ÖDEME Yap</Button>
+                        <button
+                          onClick={onClose}
+                          className="px-4 py-2 rounded-md border"
+                        >
+                          İptal
+                        </button>
+                        <Button
+                          className="bg-black text-white"
+                          onClick={() => handleVakifPayment()}
+                        >
+                          ÖDEME Yap
+                        </Button>
                       </div>
                     </div>
                   </form>
@@ -400,17 +721,33 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
 
                 <div className="p-4 border rounded">
                   <h5 className="font-semibold mb-2">Rezervasyon Özeti</h5>
-                  <div>Koltuklar: {selectedSeats.map(s=>s.seat).join(", ")}</div>
-                  <div className="mt-2">Toplam Kişi: {selectedSeats.length}</div>
-                  <div className="mt-2">Toplam Tutar: {selectedSeats.length * trip.price}₺</div>
+                  <div>
+                    Koltuklar: {selectedSeats.map((s) => s.seat).join(", ")}
+                  </div>
+                  <div className="mt-2">
+                    Toplam Kişi: {selectedSeats.length}
+                  </div>
+                  <div className="mt-2">
+                    Toplam Tutar: {selectedSeats.length * trip.price}₺
+                  </div>
                 </div>
               </div>
             </div>
           )}
-          <form ref={(el) => (gatewayFormRef.current = el)} style={{ display: "none" }} />
+          <form
+            ref={(el) => (gatewayFormRef.current = el)}
+            style={{ display: "none" }}
+          />
         </div>
       </div>
-      <VoucherModal open={voucherOpen} reservation={reservation} onClose={() => { setVoucherOpen(false); onClose && onClose(); }} />
+      <VoucherModal
+        open={voucherOpen}
+        reservation={reservation}
+        onClose={() => {
+          setVoucherOpen(false);
+          onClose && onClose();
+        }}
+      />
     </div>
   );
 }
