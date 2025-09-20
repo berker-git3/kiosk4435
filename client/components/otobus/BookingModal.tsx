@@ -127,6 +127,8 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
     setStep("payment");
   };
 
+  const gatewayFormRef = useRef<HTMLFormElement | null>(null);
+
   const confirmBooking = (paymentResult?: any) => {
     // collate booking
     const booking = {
@@ -137,6 +139,40 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
     };
     onConfirm && onConfirm(booking);
     onClose && onClose();
+  };
+
+  const handleVakifPayment = async () => {
+    const orderId = `BUS-${Date.now()}`;
+    const amount = selectedSeats.length * trip.price;
+    try {
+      const payload = { amount, orderId, currency: "TRY", description: `Bus ${trip.from}->${trip.to}` };
+      const res = await fetch("/api/payments/vakif/init", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const t = await res.text();
+        throw new Error(t || "Vakıf init failed");
+      }
+      const data = await res.json();
+      const form = gatewayFormRef.current;
+      if (!form) return;
+      form.action = data.gatewayUrl;
+      form.method = "POST";
+      while (form.firstChild) form.removeChild(form.firstChild);
+      Object.entries(data.fields).forEach(([k, v]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = k;
+        input.value = String(v);
+        form.appendChild(input);
+      });
+      form.submit();
+    } catch (err: any) {
+      alert("Ödeme başlatılamadı, rezervasyon lokal olarak kaydedildi.");
+      confirmBooking({ method: "card", fallback: true });
+    }
   };
 
   return (
