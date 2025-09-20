@@ -78,11 +78,29 @@ export default function OtobusSonuclar() {
     return data;
   }, [filters]);
 
+  const getTimeBucket = (t: string) => {
+    const [hh] = t.split(":");
+    const h = Number(hh);
+    if (h >= 6 && h < 11) return "early";
+    if (h >= 11 && h < 17) return "noon";
+    return "night";
+  };
+
+  const timeCounts = {
+    early: MOCK.filter((m) => getTimeBucket(m.depart) === "early").length,
+    noon: MOCK.filter((m) => getTimeBucket(m.depart) === "noon").length,
+    night: MOCK.filter((m) => getTimeBucket(m.depart) === "night").length,
+  };
+
   const operators = [
     { name: "Pamukkale", count: MOCK.filter((m) => m.operator === "Pamukkale").length, checked: filters.operators.has("Pamukkale") },
     { name: "Flixbus", count: MOCK.filter((m) => m.operator === "Flixbus").length, checked: filters.operators.has("Flixbus") },
     { name: "Metro", count: MOCK.filter((m) => m.operator === "Metro").length, checked: filters.operators.has("Metro") },
   ];
+
+  const quickFilters = { eTicket: false, direct: false };
+
+  const timeFilters = { early: false, noon: false, night: false, counts: timeCounts };
 
   return (
     <div className="w-full">
@@ -98,7 +116,7 @@ export default function OtobusSonuclar() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] gap-6">
-          <FilterSidebar operators={operators} onToggleOperator={toggleOperator} onReset={() => setFilters({ search: "", operators: new Set(), time: "" })} />
+          <FilterSidebar operators={operators} onToggleOperator={toggleOperator} quickFilters={quickFilters} onToggleQuickFilter={() => {}} timeFilters={timeFilters} onToggleTimeFilter={() => {}} onReset={() => setFilters({ search: "", operators: new Set(), time: "" })} />
 
           <section>
             <div className="space-y-4">
