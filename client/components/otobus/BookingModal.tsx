@@ -181,7 +181,8 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
       });
       form.submit();
     } catch (err: any) {
-      alert("Ödeme başlat��lamadı, rezervasyon lokal olarak kaydedildi.");
+      console.error("[BookingModal] Vakif init error", err);
+      alert("Ödeme başlatılamadı, rezervasyon lokal olarak kaydedildi.");
       confirmBooking({ method: "card", fallback: true });
     }
   };
