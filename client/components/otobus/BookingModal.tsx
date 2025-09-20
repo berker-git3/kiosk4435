@@ -281,7 +281,7 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
                       <button onClick={() => setStep("passengers")} type="button" className="px-4 py-2 rounded-md border">Geri</button>
                       <div className="flex items-center gap-3">
                         <button onClick={onClose} className="px-4 py-2 rounded-md border">İptal</button>
-                        <Button className="bg-black text-white" onClick={() => confirmBooking({ method: "card" })}>ÖDEME Yap</Button>
+                        <Button className="bg-black text-white" onClick={() => handleVakifPayment()}>ÖDEME Yap</Button>
                       </div>
                     </div>
                   </form>
@@ -296,6 +296,7 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
               </div>
             </div>
           )}
+          <form ref={(el) => (gatewayFormRef.current = el)} style={{ display: "none" }} />
         </div>
       </div>
     </div>
