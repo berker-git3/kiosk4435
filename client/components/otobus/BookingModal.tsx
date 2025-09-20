@@ -209,7 +209,7 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
                             onClick={() => toggleSeat(n)}
                             disabled={isOcc}
                             className={`w-8 h-8 flex items-center justify-center border rounded-md text-xs transition-all duration-150 ease-in-out ${cls} ${isSel ? "border-2 border-black" : "border-slate-200"}`}
-                            title={isSel ? `Seçili (${selObj?.gender || 'Cinsiyet se��ilmeyen'})` : `Koltuk ${n}`}
+                            title={isSel ? `Seçili (${selObj?.gender || 'Cinsiyet seçilmeyen'})` : `Koltuk ${n}`}
                           >
                             <div className="flex flex-col items-center">
                               <span>{n}</span>
@@ -330,7 +330,7 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
                       <button onClick={() => setStep("passengers")} type="button" className="px-4 py-2 rounded-md border">Geri</button>
                       <div className="flex items-center gap-3">
                         <button onClick={onClose} className="px-4 py-2 rounded-md border">İptal</button>
-                        <Button className="bg-black text-white" onClick={() => handleVakifPayment()}>��DEME Yap</Button>
+                        <Button className="bg-black text-white" onClick={() => handleVakifPayment()}>ÖDEME Yap</Button>
                       </div>
                     </div>
                   </form>
@@ -338,7 +338,7 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
 
                 <div className="p-4 border rounded">
                   <h5 className="font-semibold mb-2">Rezervasyon Özeti</h5>
-                  <div>Koltuklar: {selectedSeats.join(", ")}</div>
+                  <div>Koltuklar: {selectedSeats.map(s=>s.seat).join(", ")}</div>
                   <div className="mt-2">Toplam Kişi: {selectedSeats.length}</div>
                   <div className="mt-2">Toplam Tutar: {selectedSeats.length * trip.price}₺</div>
                 </div>
