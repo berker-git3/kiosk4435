@@ -19,6 +19,8 @@ import UcakBileti from "./pages/UcakBileti";
 import UcakYolcuBilgileri from "./pages/UcakYolcuBilgileri";
 import UcakOdeme from "./pages/UcakOdeme";
 import UcakRezervasyon from "./pages/UcakRezervasyon";
+import OtobusBileti from "./pages/OtobusBileti";
+import OtobusSonuclar from "./pages/OtobusSonuclar";
 
 const queryClient = new QueryClient();
 
