@@ -42,6 +42,7 @@ export default function App() {
                 <Route path="/videolar" element={<Videolar />} />
                 <Route path="/yat-kiralama" element={<YatKiralama />} />
                 <Route path="/yat-kiralama/:id" element={<YatDetay />} />
+                <Route path="/arac-kiralama" element={<AracKiralama />} />
                 <Route path="/ucak-bileti" element={<UcakBileti />} />
                 <Route
                   path="/ucak-bileti/yolcu-bilgileri"
