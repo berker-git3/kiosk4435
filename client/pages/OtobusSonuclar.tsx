@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import FilterSidebar from "@/components/otobus/FilterSidebar";
 import { Button } from "@/components/ui/button";
+import ResultCard from "@/components/otobus/ResultCard";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -17,6 +18,11 @@ const MOCK = [
     price: 900,
     eTicket: true,
     direct: true,
+    seats: 12,
+    features: ["wifi", "power", "toilet"],
+    rating: 4.2,
+    from: "Antalya",
+    to: "Fethiye Otogarı",
   },
   {
     id: "2",
@@ -27,6 +33,11 @@ const MOCK = [
     price: 1000,
     eTicket: false,
     direct: true,
+    seats: 8,
+    features: ["power"],
+    rating: 4.0,
+    from: "Antalya",
+    to: "Fethiye Otogarı",
   },
   {
     id: "3",
@@ -37,6 +48,11 @@ const MOCK = [
     price: 797,
     eTicket: true,
     direct: false,
+    seats: 20,
+    features: ["wifi"],
+    rating: 4.5,
+    from: "Antalya Yeni Doğan",
+    to: "Fethiye bus station",
   },
   {
     id: "4",
@@ -47,6 +63,11 @@ const MOCK = [
     price: 850,
     eTicket: false,
     direct: false,
+    seats: 5,
+    features: [],
+    rating: 3.8,
+    from: "Antalya",
+    to: "Fethiye Otogarı",
   },
 ];
 
