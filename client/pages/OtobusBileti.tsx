@@ -30,7 +30,7 @@ export default function OtobusBileti() {
 
   return (
     <div className="w-full">
-      <header className="hero-bg hero-dark p-6 md:p-12 rounded-b-xl text-white">
+      <header className="bg-black p-6 md:p-12 rounded-b-xl text-white">
         <div className="container mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold mb-3">Otobüs Bileti Ara</h1>
           <p className="text-sm md:text-base max-w-2xl mb-6">
