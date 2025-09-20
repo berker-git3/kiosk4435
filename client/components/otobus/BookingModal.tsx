@@ -209,7 +209,7 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
                             onClick={() => toggleSeat(n)}
                             disabled={isOcc}
                             className={`w-8 h-8 flex items-center justify-center border rounded-md text-xs transition-all duration-150 ease-in-out ${cls} ${isSel ? "border-2 border-black" : "border-slate-200"}`}
-                            title={isSel ? `Seçili (${selObj?.gender || 'Cinsiyet seçilmeyen'})` : `Koltuk ${n}`}
+                            title={isSel ? `Seçili (${selObj?.gender || 'Cinsiyet se��ilmeyen'})` : `Koltuk ${n}`}
                           >
                             <div className="flex flex-col items-center">
                               <span>{n}</span>
@@ -260,15 +260,25 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
             <div>
               <h4 className="font-medium mb-3">Yolcu Bilgileri</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {selectedSeats.map((s, i) => (
-                  <div key={s} className="p-4 border rounded">
-                    <div className="font-semibold mb-2">Koltuk {s}</div>
+                {selectedSeats.map((sObj, i) => (
+                  <div key={sObj.seat} className="p-4 border rounded">
+                    <div className="font-semibold mb-2">Koltuk {sObj.seat}</div>
                     <div className="grid grid-cols-1 gap-2">
-                      <input placeholder="Ad" value={passengers[i]?.name || ""} onChange={(e) => setPassengers((p) => { const c = [...p]; c[i] = { ...(c[i] || {}), name: e.target.value, seat: s }; return c; })} className="w-full rounded-md border px-3 py-2" />
-                      <input placeholder="Soyad" value={passengers[i]?.surname || ""} onChange={(e) => setPassengers((p) => { const c = [...p]; c[i] = { ...(c[i] || {}), surname: e.target.value, seat: s }; return c; })} className="w-full rounded-md border px-3 py-2" />
-                      <input placeholder="TC Kimlik" value={passengers[i]?.tc || ""} onChange={(e) => setPassengers((p) => { const c = [...p]; c[i] = { ...(c[i] || {}), tc: e.target.value, seat: s }; return c; })} className="w-full rounded-md border px-3 py-2" />
-                      <input placeholder="Telefon" value={passengers[i]?.phone || ""} onChange={(e) => setPassengers((p) => { const c = [...p]; c[i] = { ...(c[i] || {}), phone: e.target.value, seat: s }; return c; })} className="w-full rounded-md border px-3 py-2" />
-                      <input placeholder="E-posta" value={passengers[i]?.email || ""} onChange={(e) => setPassengers((p) => { const c = [...p]; c[i] = { ...(c[i] || {}), email: e.target.value, seat: s }; return c; })} className="w-full rounded-md border px-3 py-2" />
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm">Cinsiyet:</label>
+                        <label className={`px-2 py-1 rounded border ${sObj.gender === 'male' ? 'bg-blue-100' : ''}`}>
+                          <input type="radio" name={`gender-${sObj.seat}`} checked={sObj.gender === 'male'} onChange={() => { setSelectedSeats((ss) => ss.map((x)=> x.seat===sObj.seat?{...x,gender:'male'}:x)); setPassengers((p)=>{ const c=[...p]; c[i]={...(c[i]||{}),gender:'male'}; return c; }); }} /> Erkek
+                        </label>
+                        <label className={`px-2 py-1 rounded border ${sObj.gender === 'female' ? 'bg-pink-100' : ''}`}>
+                          <input type="radio" name={`gender-${sObj.seat}`} checked={sObj.gender === 'female'} onChange={() => { setSelectedSeats((ss) => ss.map((x)=> x.seat===sObj.seat?{...x,gender:'female'}:x)); setPassengers((p)=>{ const c=[...p]; c[i]={...(c[i]||{}),gender:'female'}; return c; }); }} /> Kadın
+                        </label>
+                      </div>
+
+                      <input placeholder="Ad" value={passengers[i]?.name || ""} onChange={(e) => setPassengers((p) => { const c = [...p]; c[i] = { ...(c[i] || {}), name: e.target.value, seat: sObj.seat }; return c; })} className="w-full rounded-md border px-3 py-2" />
+                      <input placeholder="Soyad" value={passengers[i]?.surname || ""} onChange={(e) => setPassengers((p) => { const c = [...p]; c[i] = { ...(c[i] || {}), surname: e.target.value, seat: sObj.seat }; return c; })} className="w-full rounded-md border px-3 py-2" />
+                      <input placeholder="TC Kimlik" value={passengers[i]?.tc || ""} onChange={(e) => setPassengers((p) => { const c = [...p]; c[i] = { ...(c[i] || {}), tc: e.target.value, seat: sObj.seat }; return c; })} className="w-full rounded-md border px-3 py-2" />
+                      <input placeholder="Telefon" value={passengers[i]?.phone || ""} onChange={(e) => setPassengers((p) => { const c = [...p]; c[i] = { ...(c[i] || {}), phone: e.target.value, seat: sObj.seat }; return c; })} className="w-full rounded-md border px-3 py-2" />
+                      <input placeholder="E-posta" value={passengers[i]?.email || ""} onChange={(e) => setPassengers((p) => { const c = [...p]; c[i] = { ...(c[i] || {}), email: e.target.value, seat: sObj.seat }; return c; })} className="w-full rounded-md border px-3 py-2" />
                       <div className="flex items-center gap-2 mt-2">
                         <label className="text-sm mr-2">Ek Hizmetler:</label>
                         <label className="flex items-center gap-2"><input type="checkbox" onChange={(e) => setPassengers((p) => { const c = [...p]; const arr = (c[i]?.extras || []); if (e.target.checked) arr.push("bagage"); else { const idx = arr.indexOf("bagage"); if (idx > -1) arr.splice(idx, 1); } c[i] = { ...(c[i] || {}), extras: arr }; return c; })} /> Bagaj</label>
@@ -320,7 +330,7 @@ export default function BookingModal({ open, trip, onClose, onConfirm }: any) {
                       <button onClick={() => setStep("passengers")} type="button" className="px-4 py-2 rounded-md border">Geri</button>
                       <div className="flex items-center gap-3">
                         <button onClick={onClose} className="px-4 py-2 rounded-md border">İptal</button>
-                        <Button className="bg-black text-white" onClick={() => handleVakifPayment()}>ÖDEME Yap</Button>
+                        <Button className="bg-black text-white" onClick={() => handleVakifPayment()}>��DEME Yap</Button>
                       </div>
                     </div>
                   </form>
